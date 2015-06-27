@@ -1,6 +1,12 @@
 #include <bikebrain/App.h>
 
+#include <bikebrain/DistanceBasedCadenceReporter.h>
 #include <bikebrain/WrappedCFont.h>
+
+#ifdef PLATFORM_EMU
+#	include <bikebrain/platform/emu/EmuDistanceSensor.h>
+#	include <bikebrain/platform/emu/EmuLedMatrix.h>
+#endif
 
 namespace bikebrain
 {
@@ -11,10 +17,12 @@ namespace bikebrain
 		: _worker(stingray::ITaskExecutor::Create("app"))
 	{
 #ifdef PLATFORM_EMU
-		ILedMatrixPtr ledMatrix = stingray::make_shared<emu::EmuLedMatrix>();
+		_ledMatrix			= stingray::make_shared<emu::EmuLedMatrix>();
+		_distanceSensor		= stingray::make_shared<emu::EmuDistanceSensor>
 		// ...
 #endif
-		_font = stingray::make_shared<WrappedCFont>();
+		_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
+		_font				= stingray::make_shared<WrappedCFont>();
 
 		_display->SetBacklightColor(RGB(255, 255, 255));
 
@@ -53,7 +61,7 @@ namespace bikebrain
 	void App::CadenceChangedHandler(double cadence)
 	{
 		s_logger.Info() << "CadenceChangedHandler(" << cadence << ")";
-		_font->DrawString(_display, 0, 0, StringBuilder() % "cad: " % cadence);
+		_font->DrawString(_display, 0, 0, stingray::StringBuilder() % "cad: " % cadence);
 	}
 
 
