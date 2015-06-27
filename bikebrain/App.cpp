@@ -19,7 +19,7 @@ namespace bikebrain
 	{
 #ifdef PLATFORM_EMU
 		_ledMatrix			= stingray::make_shared<emu::EmuDisplay>("turnIndicator", stingray::Size(32, 16));
-		_distanceSensor		= stingray::make_shared<emu::EmuDistanceSensor>(30, 2.5);
+		_distanceSensor		= stingray::make_shared<emu::EmuDistanceSensor>(30, 2);
 		_textDisplay		= stingray::make_shared<emu::EmuTextDisplay>();
 
 		emu::StdinReaderPtr stdinReader = stingray::make_shared<emu::StdinReader>();

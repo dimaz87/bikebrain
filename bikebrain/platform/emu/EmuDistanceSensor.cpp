@@ -13,6 +13,6 @@ namespace emu
 
 
 	double EmuDistanceSensor::GetDistance() const
-	{ return _amplitude * sin(_frequency * (_elapsedTime.ElapsedMicroseconds() / 1000000.0)); }
+	{ return _amplitude * sin(2 * M_PI * _frequency * (_elapsedTime.ElapsedMicroseconds() / 1000000.0)); }
 
 }}
