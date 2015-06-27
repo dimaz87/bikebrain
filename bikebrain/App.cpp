@@ -60,6 +60,18 @@ namespace bikebrain
 	void App::TurnIndicatorStateChangedHandler(TurnIndicatorState state)
 	{
 		s_logger.Info() << "TurnIndicatorStateChangedHandler(" << state << ")";
+		switch (state)
+		{
+		case TurnIndicatorState::None:
+			_font->DrawString(_ledMatrix, 0, 0, "   ");
+			break;
+		case TurnIndicatorState::Left:
+			_font->DrawString(_ledMatrix, 0, 0, "<<<");
+			break;
+		case TurnIndicatorState::Right:
+			_font->DrawString(_ledMatrix, 0, 0, ">>>");
+			break;
+		}
 	}
 
 }
