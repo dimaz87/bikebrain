@@ -1,3 +1,6 @@
 [submodule "stingraykit"]
 	path = stingraykit
 	url = git@github.com:GSGroup/stingraykit.git
+[submodule "Simple-FFT"]
+	path = Simple-FFT
+	url = git@github.com:d1vanov/Simple-FFT.git
