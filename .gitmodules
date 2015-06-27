@@ -1,0 +1,3 @@
+[submodule "stingraykit"]
+	path = stingraykit
+	url = git@github.com:GSGroup/stingraykit.git
