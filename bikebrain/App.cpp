@@ -1,7 +1,7 @@
 #include <bikebrain/App.h>
-
 #include <bikebrain/DistanceBasedCadenceReporter.h>
 #include <bikebrain/WrappedCFont.h>
+#include <bikebrain/platform/emu/EmuButton.h>
 
 #ifdef PLATFORM_EMU
 #	include <bikebrain/platform/emu/EmuDisplay.h>
@@ -15,12 +15,14 @@ namespace bikebrain
 	STINGRAYKIT_DEFINE_NAMED_LOGGER(App);
 
 	App::App()
-		: _worker(stingray::ITaskExecutor::Create("app"))
+		: _timer(new stingray::Timer("app"))
 	{
 #ifdef PLATFORM_EMU
 		_ledMatrix			= stingray::make_shared<emu::EmuDisplay>("turnIndicator", stingray::Size(32, 16));
 		_distanceSensor		= stingray::make_shared<emu::EmuDistanceSensor>(30, 2.5);
 		_textDisplay		= stingray::make_shared<emu::EmuTextDisplay>();
+		_leftButton			= stingray::make_shared<emu::EmuButton>("left");
+		_rightButton		= stingray::make_shared<emu::EmuButton>("right");
 		// ...
 #endif
 		_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
@@ -28,9 +30,9 @@ namespace bikebrain
 
 		_textDisplay->SetBacklightColor(RGB(255, 255, 255));
 
-		_tokens += _cadenceReporter->OnCadence().connect(_worker, stingray::bind(&App::CadenceChangedHandler, this, stingray::_1));
-		_tokens += _leftButton->OnPressed().connect(_worker, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
-		_tokens += _rightButton->OnPressed().connect(_worker, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
+		_tokens += _timer->SetTimer(stingray::TimeDuration::FromSeconds(3), stingray::bind(&App::PollDataFunc, this));
+		_tokens += _leftButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
+		_tokens += _rightButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
 
 		s_logger.Info() << "Created";
 	}
@@ -60,13 +62,6 @@ namespace bikebrain
 	}
 
 
-	void App::CadenceChangedHandler(double cadence)
-	{
-		s_logger.Info() << "CadenceChangedHandler(" << cadence << ")";
-		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence);
-	}
-
-
 	void App::TurnIndicatorStateChangedHandler(TurnIndicatorState state)
 	{
 		s_logger.Info() << "TurnIndicatorStateChangedHandler(" << state << ")";
@@ -83,5 +78,14 @@ namespace bikebrain
 			break;
 		}
 	}
+
+
+	void App::PollDataFunc()
+	{
+		s_logger.Info() << "PollDataFunc()";
+		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % _cadenceReporter->GetCadence());
+	}
+
+
 
 }

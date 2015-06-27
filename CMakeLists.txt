@@ -73,6 +73,7 @@ set(BIKEBRAIN_SOURCES
 	bikebrain/DistanceBasedCadenceReporter.cpp
 	bikebrain/WrappedCFont.cpp
 	bikebrain/main.cpp
+	bikebrain/platform/emu/EmuButton.cpp
 	bikebrain/platform/emu/EmuDisplay.cpp
 	bikebrain/platform/emu/EmuDistanceSensor.cpp
 	bikebrain/platform/emu/EmuTextDisplay.cpp

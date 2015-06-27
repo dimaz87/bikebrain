@@ -17,7 +17,6 @@ namespace bikebrain
 		static stingray::NamedLogger		s_logger;
 
 		IDistanceSensorPtr					_distanceSensor;
-		stingray::signal<void(double)>		_onCadence;
 		stingray::TimerPtr					_timer;
 
 		stingray::TokenPool					_tokens;
@@ -26,8 +25,7 @@ namespace bikebrain
 		DistanceBasedCadenceReporter(const IDistanceSensorPtr& distanceSensor);
 		~DistanceBasedCadenceReporter();
 
-		virtual stingray::signal_connector<void(double)> OnCadence() const
-		{ return _onCadence.connector(); }
+		virtual double GetCadence() const { return 0; }
 
 	private:
 		void PollSensorFunc();

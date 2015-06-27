@@ -24,7 +24,6 @@ namespace bikebrain
 	void DistanceBasedCadenceReporter::PollSensorFunc()
 	{
 		s_logger.Info() << "Distance: " << _distanceSensor->GetDistance();
-		_onCadence(0);
 	}
 
 }

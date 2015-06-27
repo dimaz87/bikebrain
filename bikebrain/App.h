@@ -11,6 +11,7 @@
 
 #include <stingraykit/ObservableValue.h>
 #include <stingraykit/log/Logger.h>
+#include <stingraykit/timer/Timer.h>
 #include <stingraykit/toolkit.h>
 
 namespace bikebrain
@@ -37,7 +38,7 @@ namespace bikebrain
 		ITextDisplayPtr									_textDisplay;
 		IFontPtr										_font;
 
-		stingray::ITaskExecutorPtr						_worker;
+		stingray::TimerPtr								_timer;
 
 		stingray::TokenPool								_tokens;
 
@@ -49,9 +50,9 @@ namespace bikebrain
 
 	private:
 		void ButtonPressedHandler(const std::string& button);
-		void CadenceChangedHandler(double cadence);
-
 		void TurnIndicatorStateChangedHandler(TurnIndicatorState state);
+
+		void PollDataFunc();
 	};
 
 }
