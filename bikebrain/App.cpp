@@ -1,6 +1,8 @@
 #include <bikebrain/App.h>
+
 #include <bikebrain/DistanceBasedCadenceReporter.h>
 #include <bikebrain/WrappedCFont.h>
+#include <bikebrain/platform/emu/EmuStatsEngine.h>
 
 #ifdef PLATFORM_EMU
 #	include <bikebrain/platform/emu/EmuButton.h>
@@ -26,6 +28,8 @@ namespace bikebrain
 		_leftButton			= stingray::make_shared<emu::EmuButton>(stdinReader, "left");
 		_rightButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "right");
 #endif
+
+		_statsEngine		= stingray::make_shared<emu::EmuStatsEngine>();
 		_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
 		_font				= stingray::make_shared<WrappedCFont>();
 
@@ -86,7 +90,14 @@ namespace bikebrain
 	void App::PollDataFunc()
 	{
 		s_logger.Info() << "PollDataFunc()";
-		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % _cadenceReporter->GetCadence());
+
+		double cadence = _cadenceReporter->GetCadence();
+
+		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence);
+
+		if (!_trip)
+			_trip = _statsEngine->StartTrip();
+		_trip->ReportDataEntry(DataEntry(cadence));
 	}
 
 

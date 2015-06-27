@@ -76,11 +76,13 @@ include_directories(Simple-FFT/include)
 set(BIKEBRAIN_SOURCES
 	bikebrain/App.cpp
 	bikebrain/DistanceBasedCadenceReporter.cpp
+	bikebrain/HttpStatsEngine.cpp
 	bikebrain/WrappedCFont.cpp
 	bikebrain/main.cpp
 	bikebrain/platform/emu/EmuButton.cpp
 	bikebrain/platform/emu/EmuDisplay.cpp
 	bikebrain/platform/emu/EmuDistanceSensor.cpp
+	bikebrain/platform/emu/EmuStatsEngine.cpp
 	bikebrain/platform/emu/EmuTextDisplay.cpp
 	bikebrain/platform/emu/StdinReader.cpp
 )

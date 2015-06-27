@@ -7,6 +7,7 @@
 #include <bikebrain/IDistanceSensor.h>
 #include <bikebrain/IFont.h>
 #include <bikebrain/ILedMatrix.h>
+#include <bikebrain/IStatsEngine.h>
 #include <bikebrain/ITextDisplay.h>
 
 #include <stingraykit/ObservableValue.h>
@@ -37,6 +38,8 @@ namespace bikebrain
 		IDistanceSensorPtr								_distanceSensor;
 		ITextDisplayPtr									_textDisplay;
 		IFontPtr										_font;
+		IStatsEnginePtr									_statsEngine;
+		ITripPtr										_trip;
 
 		stingray::TimerPtr								_timer;
 
