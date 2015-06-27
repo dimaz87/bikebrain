@@ -99,6 +99,7 @@ else ()
 		bikebrain/platform/emu/EmuButton.cpp
 		bikebrain/platform/emu/EmuDisplay.cpp
 		bikebrain/platform/emu/EmuDistanceSensor.cpp
+		bikebrain/platform/emu/EmuGpsModule.cpp
 		bikebrain/platform/emu/EmuTextDisplay.cpp
 		bikebrain/platform/emu/StdinReader.cpp
 	)

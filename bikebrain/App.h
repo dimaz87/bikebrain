@@ -6,6 +6,7 @@
 #include <bikebrain/IDisplay.h>
 #include <bikebrain/IDistanceSensor.h>
 #include <bikebrain/IFont.h>
+#include <bikebrain/IGpsModule.h>
 #include <bikebrain/ILedMatrix.h>
 #include <bikebrain/IStatsEngine.h>
 #include <bikebrain/ITextDisplay.h>
@@ -31,6 +32,7 @@ namespace bikebrain
 
 		stingray::ObservableValue<TurnIndicatorState>	_turnIndicatorState;
 
+		IGpsModulePtr									_gpsModule;
 		IButtonPtr										_leftButton;
 		IButtonPtr										_rightButton;
 		IButtonPtr										_controlButton;

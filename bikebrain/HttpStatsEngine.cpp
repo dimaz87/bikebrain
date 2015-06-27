@@ -106,7 +106,6 @@ namespace bikebrain
 
 		size_t WriteCallbackNonStatic(char *ptr, size_t size, size_t nmemb)
 		{
-			stingray::Logger::Info() << "WriteCallbackNonStatic(" << std::string(ptr, size * nmemb) << ", " << size << ", " << nmemb << ")";
 			std::copy(ptr, ptr + size * nmemb, std::back_inserter(_responseData));
 			return size * nmemb;
 		}
@@ -125,6 +124,7 @@ namespace bikebrain
 		PostRequest(const std::string& url, const std::string& contentType, stingray::ConstByteData data)
 			: HttpRequestBase(url), _ofs(0)
 		{
+			s_logger.Info() << "PostRequest(" << url << ", " << contentType << ", ...)";
 			_data.resize(data.size());
 			std::copy(data.begin(), data.end(), _data.begin());
 			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_POST, 1));
@@ -201,31 +201,20 @@ namespace bikebrain
 				sb % (first ? "" : ", ") %
 					"{ \"trip_id\": \"" % _tripId % "\", " %
 					"\"gps_longitude\": \"" % it->GetGpsData().GetLongitude() % "\", " %
-					"\"gps_latitude: \"" % it->GetGpsData().GetLatitude() % "\", " %
+					"\"gps_latitude\": \"" % it->GetGpsData().GetLatitude() % "\", " %
 					"\"gps_speed\": \"" % it->GetGpsData().GetSpeed() % "\", " %
 					"\"gps_time\": \"" % it->GetGpsData().GetTime() % "\", " %
-					"\", \"cadence\": \"" % it->GetCadence() % "\" }";
+					"\"cadence\": \"" % it->GetCadence() % "\" }";
 
 				first = false;
 			}
 			sb % " ] }";
 
-			s_logger.Info() << sb;
-
 			std::string jsonStr = sb.ToString();
-			PostRequest r(stingray::StringBuilder() % "bikebrains.herokuapp.com/trips/" % _tripId, "application/json", stingray::ConstByteData((const uint8_t*)jsonStr.data(), jsonStr.size()));
+			PostRequest r("bikebrains.herokuapp.com/route_points/multiple.json", "application/json", stingray::ConstByteData((const uint8_t*)jsonStr.data(), jsonStr.size()));
 			r.Perform();
 
 			STINGRAYKIT_CHECK(r.GetResponseCode() / 100 == 2, stingray::StringBuilder() % "HTTP response code: " % r.GetResponseCode());
-/*
-JSON_STRING1='{ "trip_id": "2", "gps_longitude": "30.3212436", "gps_latitude": "59.9682213", "gps_speed": "1.6", "cadence": "30.0", "gps_time": "'`date -u --rfc-3339=ns`'"}'
-JSON_STRING2='{ "trip_id": "2", "gps_longitude": "30.3212436", "gps_latitude": "59.9682213", "gps_speed": "1.6", "cadence": "30.0", "gps_time": "'`date -u --rfc-3339=ns`'"}'
-JSON_STRING='{ "route_points": [ '$JSON_STRING1', '$JSON_STRING2' ] }'
-echo $JSON_STRING
-curl -XPOST -H "Content-Type: application/json" "localhost:3000/route_points/multiple.json" -d "$JSON_STRING"
-
- */
-
 		}
 	};
 

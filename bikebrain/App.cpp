@@ -8,8 +8,9 @@
 #ifdef PLATFORM_EMU
 #	include <bikebrain/platform/emu/EmuButton.h>
 #	include <bikebrain/platform/emu/EmuDisplay.h>
-#	include <bikebrain/platform/emu/EmuTextDisplay.h>
 #	include <bikebrain/platform/emu/EmuDistanceSensor.h>
+#	include <bikebrain/platform/emu/EmuGpsModule.h>
+#	include <bikebrain/platform/emu/EmuTextDisplay.h>
 #elif defined(PLATFORM_EDISON)
 #	include <bikebrain/platform/edison/Button.h>
 #endif
@@ -23,6 +24,7 @@ namespace bikebrain
 		: _timer(new stingray::Timer("app"))
 	{
 #ifdef PLATFORM_EMU
+		_gpsModule			= stingray::make_shared<emu::EmuGpsModule>();
 		_ledMatrix			= stingray::make_shared<emu::EmuDisplay>("turnIndicator", stingray::Size(32, 16));
 		_distanceSensor		= stingray::make_shared<emu::EmuDistanceSensor>(30, 2);
 		_textDisplay		= stingray::make_shared<emu::EmuTextDisplay>();
@@ -99,12 +101,13 @@ namespace bikebrain
 		s_logger.Info() << "PollDataFunc()";
 
 		double cadence = _cadenceReporter->GetCadence();
+		GpsData gpsData = _gpsModule->GetData();
 
 		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence);
 
 		if (!_trip)
 			_trip = _statsEngine->StartTrip(stingray::StringBuilder() % "bikebrain test trip " % stingray::Time::Now());
-		_trip->ReportDataEntry(DataEntry(GpsData(0, 0, 0, stingray::Time::Now()), cadence));
+		_trip->ReportDataEntry(DataEntry(gpsData, cadence));
 	}
 
 
