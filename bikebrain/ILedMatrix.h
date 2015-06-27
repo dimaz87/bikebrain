@@ -10,7 +10,7 @@ namespace bikebrain
 	{
 		virtual ~ILedMatrix() { }
 
-		virtual stingray::Size GetSize() const = 0;
+		virtual stingray::Size GetResolution() const = 0;
 		virtual void EnableLed(int i, int j, bool enable) = 0;
 	};
 	STINGRAYKIT_DECLARE_PTR(ILedMatrix);

@@ -10,7 +10,7 @@ namespace emu
 	{ }
 
 
-	stingray::Size EmuLedMatrix::GetSize() const
+	stingray::Size EmuLedMatrix::GetResolution() const
 	{ return _size; }
 
 

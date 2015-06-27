@@ -1,6 +1,11 @@
 #ifndef BIKEBRAIN_APP_H
 #define BIKEBRAIN_APP_H
 
+#include <bikebrain/IButton.h>
+#include <bikebrain/ICadenceReporter.h>
+#include <bikebrain/IDisplay.h>
+#include <bikebrain/ILedMatrix.h>
+
 namespace bikebrain
 {
 
@@ -21,6 +26,7 @@ namespace bikebrain
 		IButtonPtr										_rightButton;
 		ILedMatrixPtr									_ledMatrix;
 		ICadenceReporterPtr								_cadenceReporter;
+		IDisplayPtr										_display;
 
 		stingray::ITaskExecutorPtr						_worker;
 

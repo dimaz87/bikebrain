@@ -11,10 +11,15 @@ namespace bikebrain
 	{
 #ifdef PLATFORM_EMU
 		ILedMatrixPtr ledMatrix = stingray::make_shared<emu::EmuLedMatrix>();
+		// ...
 #endif
+
+		_display->SetBacklightColor(RGB(255, 255, 255));
+
 		_tokens += _cadenceReporter->OnCadence().connect(_worker, stingray::bind(&App::CadenceChangedHandler, this, stingray::_1));
 		_tokens += _leftButton->OnPressed().connect(_worker, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
 		_tokens += _rightButton->OnPressed().connect(_worker, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
+
 		s_logger.Info() << "Created";
 	}
 

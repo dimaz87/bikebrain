@@ -18,7 +18,7 @@ namespace emu
 	public:
 		EmuLedMatrix(stingray::Size size);
 
-		virtual stingray::Size GetSize() const;
+		virtual stingray::Size GetResolution() const;
 		virtual void EnableLed(int i, int j, bool enable);
 	};
 
