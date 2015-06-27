@@ -29,6 +29,10 @@ if (NOT PLATFORM_EMU)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_C_FLAGS} --sysroot=${EDISON_SYSROOT_PATH}")
 
 	set(COMMON_LD_FLAGS "${COMMON_LD_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed --sysroot=${EDISON_SYSROOT_PATH}")
+
+	include_directories("${EDISON_SYSROOT_PATH}/usr/include/c++")
+	include_directories("${EDISON_SYSROOT_PATH}/usr/include/c++/i586-poky-linux")
+
 else()
 	add_definitions(-DPLATFORM_EMU)
 endif ()

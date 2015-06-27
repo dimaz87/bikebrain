@@ -1,0 +1,28 @@
+test "$0" != "${BASH_SOURCE}" || { echo "Must be sourced"; return 1; }
+
+RootDirectory="$(dirname "${BASH_SOURCE}")"
+RootDirectory="$(realpath "${RootDirectory}")"
+
+export LD_LIBRARY_PATH="${RootDirectory}/toolchain/edison-sdk-linux64-ww18-15/sysroots/core2-32-poky-linux/usr/lib"
+
+(
+	cd ${RootDirectory}/stingraykit
+	patch --forward --reject-file=- -p1 << PATCH
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a9e9d9a..03da9ee 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -329,9 +329,9 @@ __attribute__((nomips16))
+ #endif
+ int main() { return i; }" HAVE_THREAD_KEYWORD)
+ 
+-if (HAVE_THREAD_KEYWORD)
++#if (HAVE_THREAD_KEYWORD)
+ 	list(APPEND STINGRAYKIT_DEFINITIONS -DSTINGRAYKIT_HAS_THREAD_KEYWORD=1)
+-endif (HAVE_THREAD_KEYWORD)
++#endif (HAVE_THREAD_KEYWORD)
+ 
+ CHECK_C_SOURCE_COMPILES("#include <time.h>
+ 	int main(int argc, char *argv[]) { clockid_t x; return 0; }" HAVE_CLOCKID_T)
+PATCH
+)
