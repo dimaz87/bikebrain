@@ -12,6 +12,9 @@ namespace bikebrain
 #ifdef PLATFORM_EMU
 		ILedMatrixPtr ledMatrix = stingray::make_shared<emu::EmuLedMatrix>();
 #endif
+		_tokens += _cadenceReporter->OnCadence().connect(stingray::bind(&App::CadenceChangedHandler, this, stingray::_1));
+		_tokens += _leftButton->OnPressed().connect(stingray::bind(&App::ButtonPressedHandler, this, "Left"));
+		_tokens += _rightButton->OnPressed().connect(stingray::bind(&App::ButtonPressedHandler, this, "Right"));
 		s_logger.Info() << "Created";
 	}
 
@@ -19,6 +22,7 @@ namespace bikebrain
 	App::~App()
 	{
 		s_logger.Info() << "Destroying";
+		_tokens.Release();
 	}
 
 

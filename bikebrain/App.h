@@ -24,6 +24,8 @@ namespace bikebrain
 
 		stingray::ITaskExecutorPtr						_worker;
 
+		stingray::TokenPool								_tokens;
+
 	public:
 		App();
 		~App();
