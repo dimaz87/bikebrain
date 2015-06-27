@@ -7,6 +7,9 @@
 namespace bikebrain
 {
 
+	STINGRAYKIT_DEFINE_NAMED_LOGGER(WrappedCFont);
+
+
 	stingray::Size WrappedCFont::GetSymbolSize() const
 	{ return stingray::Size(8, 8); }
 
@@ -19,8 +22,8 @@ namespace bikebrain
 		if (x + 8 <= 0 || y + 8 <= 0 || x > res.Width || y > res.Height)
 			return;
 
-		for (int j = std::min(0, -y); j < std::min(8, res.Height - y); ++j)
-			for (int i = std::min(0, -x); i < std::min(8, res.Width - x); ++i)
+		for (int j = std::max(0, -y); j < std::min(8, res.Height - y); ++j)
+			for (int i = std::max(0, -x); i < std::min(8, res.Width - x); ++i)
 				ledMatrix->EnableLed(x + i, y + j, (font[c] & (0x1LL << ((7 - i) + (7 - j) * 8))) != 0);
 	}
 

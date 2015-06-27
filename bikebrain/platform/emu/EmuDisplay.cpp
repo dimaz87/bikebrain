@@ -37,7 +37,7 @@ namespace emu
 		for (int j = 0; j < _size.Height; ++j)
 		{
 			for (int i = 0; i < _size.Width; ++i)
-				sr % (_data[i + j * _size.Height] ? 'X' : '_');
+				sr % (_data[i + j * _size.Width] ? 'X' : '_');
 			sr % "\n";
 		}
 

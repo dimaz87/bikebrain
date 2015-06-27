@@ -35,6 +35,8 @@ namespace bikebrain
 		_tokens += _leftButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
 		_tokens += _rightButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
 
+		_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
+
 		s_logger.Info() << "Created";
 	}
 
@@ -69,13 +71,13 @@ namespace bikebrain
 		switch (state)
 		{
 		case TurnIndicatorState::None:
-			_font->DrawString(_ledMatrix, 0, 0, "   ");
+			_font->DrawString(_ledMatrix, 0, 0, "    ");
 			break;
 		case TurnIndicatorState::Left:
-			_font->DrawString(_ledMatrix, 0, 0, "<<<");
+			_font->DrawString(_ledMatrix, 0, 0, "LEFT");
 			break;
 		case TurnIndicatorState::Right:
-			_font->DrawString(_ledMatrix, 0, 0, ">>>");
+			_font->DrawString(_ledMatrix, 0, 0, "RGHT");
 			break;
 		}
 	}
