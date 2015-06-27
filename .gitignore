@@ -1,3 +1,5 @@
+*.swo
+*.swp
 /.buildSettings
 /CMakeCache.txt
 /CMakeFiles
