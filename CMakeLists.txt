@@ -67,6 +67,7 @@ include_directories(${STINGRAYKIT_INCLUDE_DIRECTORIES})
 
 include_directories(.)
 include_directories(stingraykit)
+include_directories(Simple-FFT/include)
 
 set(BIKEBRAIN_SOURCES
 	bikebrain/App.cpp

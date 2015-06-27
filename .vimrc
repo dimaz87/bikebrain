@@ -3,8 +3,8 @@ au FileType cpp,cpp.doxygen set complete-=i
 set wildignore=*.o,*.html,*.md5,*.exe,*.dll,*.bak,*.png,*.jpg,*.orig,*.swp,*.swo,*.pyc,*/.git/*,*/.hg/*,*/.bzr/*,*/doxygen/*,*/CMakeFiles/*,ui/*,etc/*,*/cxxtest/*,*/v8/*,*/toolchain/*,*/thirdparty/*
 let g:exclude_from_search=['stingray_wrap.cpp']
 
-set path+=stingraykit
-let g:include_directories = [ 'stingraykit' ]
+set path+=stingraykit,Simple-FFT/include
+let g:include_directories = [ 'stingraykit', 'Simple-FFT/include' ]
 
 
 let g:cpp_plugin.whitespacesCountAroundImports = 1
