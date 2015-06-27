@@ -26,6 +26,7 @@ namespace emu
 	public:
 		EmuDisplay(const std::string& name, stingray::Size size);
 
+		virtual void SetBacklightColor(RGB color) const;
 		virtual stingray::Size GetResolution() const;
 		virtual void EnableLed(int i, int j, bool enable);
 

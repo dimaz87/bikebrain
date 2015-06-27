@@ -17,6 +17,10 @@ namespace emu
 	{ return _size; }
 
 
+	void EmuDisplay::SetBacklightColor(RGB color) const
+	{ s_logger.Info() << "SetBacklightColor(" << color << ") const"; }
+
+
 	void EmuDisplay::EnableLed(int i, int j, bool enable)
 	{
 		STINGRAYKIT_CHECK(i >= 0 && i < _size.Width, stingray::ArgumentException("i"));
