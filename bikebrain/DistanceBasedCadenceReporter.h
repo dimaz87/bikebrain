@@ -4,6 +4,7 @@
 #include <bikebrain/ICadenceReporter.h>
 #include <bikebrain/IDistanceSensor.h>
 
+#include <stingraykit/ObservableValue.h>
 #include <stingraykit/log/Logger.h>
 #include <stingraykit/signal/signals.h>
 #include <stingraykit/timer/Timer.h>
@@ -14,8 +15,13 @@ namespace bikebrain
 	class DistanceBasedCadenceReporter : public virtual ICadenceReporter
 	{
 	private:
+		typedef std::vector<double>			DataVector;
+
+	private:
 		static stingray::NamedLogger		s_logger;
 
+		DataVector							_data;
+		stingray::ObservableValue<double>	_cadence;
 		IDistanceSensorPtr					_distanceSensor;
 		stingray::TimerPtr					_timer;
 
@@ -25,7 +31,7 @@ namespace bikebrain
 		DistanceBasedCadenceReporter(const IDistanceSensorPtr& distanceSensor);
 		~DistanceBasedCadenceReporter();
 
-		virtual double GetCadence() const { return 0; }
+		virtual double GetCadence() const { return _cadence.Get(); }
 
 	private:
 		void PollSensorFunc();
