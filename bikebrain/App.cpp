@@ -103,7 +103,7 @@ namespace bikebrain
 		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence);
 
 		if (!_trip)
-			_trip = _statsEngine->StartTrip();
+			_trip = _statsEngine->StartTrip("shitty\"name");
 		_trip->ReportDataEntry(DataEntry(cadence));
 	}
 

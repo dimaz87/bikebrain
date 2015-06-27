@@ -1,9 +1,18 @@
 #include <bikebrain/HttpStatsEngine.h>
 
+#include <stingraykit/Holder.h>
+#include <stingraykit/ScopeExit.h>
+#include <stingraykit/collection/ByteData.h>
+#include <stingraykit/string/regex.h>
+
+#include <algorithm>
+
 #include <curl/curl.h>
 
 namespace bikebrain
 {
+
+	static const int MaxDataEntriesSize = 3;
 
 	std::string CurlErrorToString(CURLcode c);
 
@@ -13,29 +22,164 @@ namespace bikebrain
 		STINGRAYKIT_CHECK(__res__ == CURLE_OK, stingray::Exception(#__VA_ARGS__ " failed: " + CurlErrorToString(__res__))); \
 	} while (false)
 
-	class HttpTrip : public virtual ITrip
+
+	class CurlHolder
 	{
 	private:
-		static stingray::NamedLogger			s_logger;
+		stingray::SharedHolder<CURL*>	_holder;
 
 	public:
-		HttpTrip()
+		CurlHolder()
+			: _holder(&curl_easy_cleanup)
 		{
 			CURL* curl = curl_easy_init();
 			STINGRAYKIT_CHECK(curl, "curl_easy_init() failed!");
-			curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1/whatever");
-			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "param1=someValue&param2=otherValue");
-			CURL_CALL(curl_easy_perform(curl));
+			_holder.Set(curl);
+		}
+
+		operator CURL*() const	{ return Get(); }
+		CURL* Get() const		{ return _holder.Get(); }
+	};
+
+
+	class HttpRequestBase
+	{
+	protected:
+		CurlHolder				_curl;
+		struct curl_slist*		_headers;
+		std::vector<uint8_t>	_responseData;
+
+	public:
+		HttpRequestBase(const std::string& url)
+			: _headers(NULL)
+		{
+			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_URL, url.c_str()));
+			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, &HttpRequestBase::WriteCallback));
+			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_WRITEDATA, this));
+		}
+
+		~HttpRequestBase()
+		{
+			if (_headers)
+				curl_slist_free_all(_headers);
+		}
+
+		void AppendHeader(const std::string& header)
+		{
+			_headers = curl_slist_append(_headers, header.c_str());
+			STINGRAYKIT_CHECK(_headers, "curl_slist_append failed!");
+		}
+
+		void Perform()
+		{
+			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, _headers));
+			CURL_CALL(curl_easy_perform(_curl));
+		}
+
+		int GetResponseCode() const
+		{
+			long responseCode = 0;
+			CURL_CALL(curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE, &responseCode));
+			return responseCode;
+		}
+
+		std::string GetResponseContentType() const
+		{
+			const char* contentType = NULL;
+			CURL_CALL(curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentType));
+			return contentType;
+		}
+
+		stingray::ConstByteData GetResponseData() const
+		{ return stingray::ConstByteData(_responseData); }
+
+	private:
+		static size_t WriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata)
+		{
+			HttpRequestBase* inst = static_cast<HttpRequestBase*>(userdata);
+			return inst->WriteCallbackNonStatic(ptr, size, nmemb);
+		}
+
+		size_t WriteCallbackNonStatic(char *ptr, size_t size, size_t nmemb)
+		{
+			stingray::Logger::Info() << "WriteCallbackNonStatic(" << std::string(ptr, size * nmemb) << ", " << size << ", " << nmemb << ")";
+			std::copy(ptr, ptr + size * nmemb, std::back_inserter(_responseData));
+			return size * nmemb;
+		}
+	};
+
+
+	class PostRequest : public HttpRequestBase
+	{
+	private:
+		std::vector<uint8_t>	_data;
+		size_t					_ofs;
+
+	public:
+		PostRequest(const std::string& url, const std::string& contentType, stingray::ConstByteData data)
+			: HttpRequestBase(url), _ofs(0)
+		{
+			_data.resize(data.size());
+			std::copy(data.begin(), data.end(), _data.begin());
+			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_POST, 1));
+			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_POSTFIELDS, _data.data()));
+			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_POSTFIELDSIZE, _data.size()));
+			AppendHeader("Content-Type: " + contentType);
+			AppendHeader("Content-Length: " + stingray::ToString(_data.size()));
+		}
+	};
+
+
+	class HttpTrip : public virtual ITrip
+	{
+	private:
+		typedef std::vector<DataEntry>			DataEntriesVector;
+	private:
+		static stingray::NamedLogger			s_logger;
+
+		DataEntriesVector						_dataEntries;
+		stingray::Mutex							_mutex;
+
+	public:
+		HttpTrip(const std::string& name)
+		{
+			std::string escapedName = stingray::regex_replace(name, stingray::regex("\""), "\\\"");
+			std::string jsonStr = "{ \"trip\": { \"title\": \"" + escapedName + "\" } }";
+			PostRequest r("bikebrains.herokuapp.com/trips.json", "application/json", stingray::ConstByteData((const uint8_t*)jsonStr.data(), jsonStr.size()));
+			r.Perform();
+
+			std::string contentType = r.GetResponseContentType();
+			long responseCode = r.GetResponseCode();
+			std::string content(r.GetResponseData().begin(), r.GetResponseData().end());
+
+			s_logger.Info() << "Response: " << responseCode << ", Content Type: " << contentType << ", content: " << content;
+			STINGRAYKIT_CHECK(responseCode / 100 == 2, stingray::StringBuilder() % "HTTP response code: " % responseCode);
+
 			s_logger.Info() << "Created";
 		}
 
 		~HttpTrip()
 		{
 			s_logger.Info() << "Destroying";
+			SendDataEntries();
 		}
 
 		virtual void ReportDataEntry(const DataEntry& dataEntry)
 		{
+			stingray::MutexLock l(_mutex);
+			if (_dataEntries.size() >= MaxDataEntriesSize)
+				SendDataEntries();
+			_dataEntries.push_back(dataEntry);
+		}
+
+	private:
+		void SendDataEntries()
+		{
+			s_logger.Info() << "SendDataEntries(): " << _dataEntries;
+
+			STINGRAYKIT_SCOPE_EXIT(MK_PARAM(DataEntriesVector&, _dataEntries))
+				_dataEntries.clear();
+			STINGRAYKIT_SCOPE_EXIT_END;
 		}
 	};
 
@@ -58,9 +202,9 @@ namespace bikebrain
 	}
 
 
-	ITripPtr HttpStatsEngine::StartTrip()
+	ITripPtr HttpStatsEngine::StartTrip(const std::string& name)
 	{
-		return stingray::make_shared<HttpTrip>();
+		return stingray::make_shared<HttpTrip>(name);
 	}
 
 

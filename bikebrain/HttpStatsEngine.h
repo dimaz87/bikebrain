@@ -17,7 +17,7 @@ namespace bikebrain
 		HttpStatsEngine();
 		~HttpStatsEngine();
 
-		virtual ITripPtr StartTrip();
+		virtual ITripPtr StartTrip(const std::string& name);
 	};
 
 }

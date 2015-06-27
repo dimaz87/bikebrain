@@ -19,7 +19,7 @@ namespace bikebrain
 	{
 		virtual ~IStatsEngine() { }
 
-		virtual ITripPtr StartTrip() = 0;
+		virtual ITripPtr StartTrip(const std::string& name) = 0;
 	};
 	STINGRAYKIT_DECLARE_PTR(IStatsEngine);
 
