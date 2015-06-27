@@ -1,6 +1,8 @@
 #ifndef BIKEBRAIN_ILEDMATRIX_H
 #define BIKEBRAIN_ILEDMATRIX_H
 
+#include <stingraykit/Rect.h>
+
 namespace bikebrain
 {
 
@@ -8,8 +10,10 @@ namespace bikebrain
 	{
 		virtual ~ILedMatrix() { }
 
-		/* methods */
+		virtual stingray::Size GetSize() const = 0;
+		virtual void EnableLed(int i, int j, bool enable) = 0;
 	};
+	STINGRAYKIT_DECLARE_PTR(ILedMatrix);
 
 }
 

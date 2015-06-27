@@ -3,12 +3,23 @@
 
 #include <bikebrain/ILedMatrix.h>
 
+#include <vector>
+
 namespace bikebrain {
 namespace emu
 {
 
-	class EmuLedMatrix : public virtul ILedMatrix
+	class EmuLedMatrix : public virtual ILedMatrix
 	{
+	private:
+		stingray::Size			_size;
+		std::vector<bool>		_data;
+
+	public:
+		EmuLedMatrix(stingray::Size size);
+
+		virtual stingray::Size GetSize() const;
+		virtual void EnableLed(int i, int j, bool enable);
 	};
 
 }}
