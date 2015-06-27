@@ -1,9 +1,9 @@
 #include <bikebrain/App.h>
 #include <bikebrain/DistanceBasedCadenceReporter.h>
 #include <bikebrain/WrappedCFont.h>
-#include <bikebrain/platform/emu/EmuButton.h>
 
 #ifdef PLATFORM_EMU
+#	include <bikebrain/platform/emu/EmuButton.h>
 #	include <bikebrain/platform/emu/EmuDisplay.h>
 #	include <bikebrain/platform/emu/EmuTextDisplay.h>
 #	include <bikebrain/platform/emu/EmuDistanceSensor.h>
@@ -21,9 +21,10 @@ namespace bikebrain
 		_ledMatrix			= stingray::make_shared<emu::EmuDisplay>("turnIndicator", stingray::Size(32, 16));
 		_distanceSensor		= stingray::make_shared<emu::EmuDistanceSensor>(30, 2.5);
 		_textDisplay		= stingray::make_shared<emu::EmuTextDisplay>();
-		_leftButton			= stingray::make_shared<emu::EmuButton>("left");
-		_rightButton		= stingray::make_shared<emu::EmuButton>("right");
-		// ...
+
+		emu::StdinReaderPtr stdinReader = stingray::make_shared<emu::StdinReader>();
+		_leftButton			= stingray::make_shared<emu::EmuButton>(stdinReader, "left");
+		_rightButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "right");
 #endif
 		_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
 		_font				= stingray::make_shared<WrappedCFont>();

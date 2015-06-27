@@ -77,6 +77,7 @@ set(BIKEBRAIN_SOURCES
 	bikebrain/platform/emu/EmuDisplay.cpp
 	bikebrain/platform/emu/EmuDistanceSensor.cpp
 	bikebrain/platform/emu/EmuTextDisplay.cpp
+	bikebrain/platform/emu/StdinReader.cpp
 )
 
 set(EXECUTABLE_OUTPUT_PATH ./build)
