@@ -3,6 +3,8 @@
 
 #include <bikebrain/ITextDisplay.h>
 
+#include <stingraykit/log/Logger.h>
+
 namespace bikebrain {
 namespace emu
 {

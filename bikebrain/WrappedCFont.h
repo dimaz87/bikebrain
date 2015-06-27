@@ -3,6 +3,8 @@
 
 #include <bikebrain/IFont.h>
 
+#include <stingraykit/Types.h>
+
 namespace bikebrain
 {
 

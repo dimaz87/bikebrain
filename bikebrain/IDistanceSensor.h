@@ -1,6 +1,8 @@
 #ifndef BIKEBRAIN_IDISTANCESENSOR_H
 #define BIKEBRAIN_IDISTANCESENSOR_H
 
+#include <stingraykit/shared_ptr.h>
+
 namespace bikebrain
 {
 

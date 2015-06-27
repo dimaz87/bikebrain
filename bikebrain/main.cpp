@@ -1,5 +1,8 @@
+#include <bikebrain/App.h>
+
 #include <stingraykit/log/Logger.h>
 
+using namespace bikebrain;
 
 int main()
 {
@@ -9,5 +12,5 @@ int main()
 		app.Run();
 	}
 	catch(const std::exception& ex)
-	{ Logger::Error() << "bikebrain failed: " << ex; }
+	{ stingray::Logger::Error() << "bikebrain failed: " << ex; }
 }

@@ -4,8 +4,13 @@
 #include <bikebrain/IButton.h>
 #include <bikebrain/ICadenceReporter.h>
 #include <bikebrain/IDisplay.h>
+#include <bikebrain/IDistanceSensor.h>
+#include <bikebrain/IFont.h>
 #include <bikebrain/ILedMatrix.h>
+#include <bikebrain/ITextDisplay.h>
 
+#include <stingraykit/ObservableValue.h>
+#include <stingraykit/log/Logger.h>
 #include <stingraykit/toolkit.h>
 
 namespace bikebrain
@@ -28,6 +33,7 @@ namespace bikebrain
 		IButtonPtr										_rightButton;
 		ILedMatrixPtr									_ledMatrix;
 		ICadenceReporterPtr								_cadenceReporter;
+		IDistanceSensorPtr								_distanceSensor;
 		ITextDisplayPtr									_textDisplay;
 		IFontPtr										_font;
 

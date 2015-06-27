@@ -4,6 +4,10 @@
 #include <bikebrain/ICadenceReporter.h>
 #include <bikebrain/IDistanceSensor.h>
 
+#include <stingraykit/log/Logger.h>
+#include <stingraykit/signal/signals.h>
+#include <stingraykit/timer/Timer.h>
+
 namespace bikebrain
 {
 
@@ -23,7 +27,7 @@ namespace bikebrain
 		~DistanceBasedCadenceReporter();
 
 		virtual stingray::signal_connector<void(double)> OnCadence() const
-		{ return _onCadence; }
+		{ return _onCadence.connector(); }
 
 	private:
 		void PollSensorFunc();

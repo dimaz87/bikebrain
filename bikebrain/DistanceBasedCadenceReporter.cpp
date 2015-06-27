@@ -9,7 +9,7 @@ namespace bikebrain
 	DistanceBasedCadenceReporter::DistanceBasedCadenceReporter(const IDistanceSensorPtr& distanceSensor)
 		: _distanceSensor(distanceSensor), _timer(new stingray::Timer("cadenceReporter"))
 	{
-		_tokens += _timer.SetTimer(stingray::TimeDuration::FromSeconds(1), stingray::bind(&DistanceBasedCadenceReporter::PollSensorFunc, this));
+		_tokens += _timer->SetTimer(stingray::TimeDuration::FromSeconds(1), stingray::bind(&DistanceBasedCadenceReporter::PollSensorFunc, this));
 		s_logger.Info() << "Created";
 	}
 

@@ -10,7 +10,7 @@ namespace bikebrain
 	{
 		virtual ~ICadenceReporter() { }
 
-		virtual stingray::signal_connector<void(double)> OnCadence() const;
+		virtual stingray::signal_connector<void(double)> OnCadence() const = 0;
 	};
 	STINGRAYKIT_DECLARE_PTR(ICadenceReporter);
 

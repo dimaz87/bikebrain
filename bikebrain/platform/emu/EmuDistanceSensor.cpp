@@ -1,4 +1,4 @@
-#include <bikebrain/platform/EmuDistanceSensor.h>
+#include <bikebrain/platform/emu/EmuDistanceSensor.h>
 
 #include <math.h>
 
