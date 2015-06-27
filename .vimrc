@@ -6,8 +6,10 @@ let g:exclude_from_search=['stingray_wrap.cpp']
 set path+=stingraykit
 let g:include_directories = [ 'stingraykit' ]
 
+
 let g:cpp_plugin.whitespacesCountAroundImports = 1
 let g:cpp_plugin.indexer.builder.autoBuild = 1
+call g:cpp_plugin.autocompleteSettings.setAutoInvokationKeys('\<C-N>')
 call g:cpp_plugin.indexer.builder.exclude([ '*CMakeFiles*', '*doxygen*', '*native/v8*', './build/test-runner.cpp', './etc*', './stingray/platform/celestial/af9013/*', './stingray/platform/cxd2820/driver/*', './stingray/platform/emma3/modules/*', './stingray/platform/emma3/tuners/nec_dvbs2_defs.h', './stingray/platform/np6/registers.h', '*.tab.h', '*.yy.h', '*.tab.cpp', '*.yy.cpp', './stingray/test/cxxtest/*', './stingray/thirdparty/coredumper/elfcore.c', './stingray/thirdparty/coredumper/linux_syscall_support.h', './stingray/toolkit/bind.h', './ui.argile/bin/argile/pyparsing.py', './ui.argile/native/argile/RTree.h', './ui.argile/native/argile/backend/celestial/blit_cmd_reg_def.h', './ui.argile/native/argile/backend/celestial/blit_hw.h', './ui.argile/native/argile/backend/celestial/orion_gfxobj.h', './ui.argile/native/argile/backend/software/dlmalloc.c', './ui.argile/native/argile/lowlevel/PixelsArray.h', './ui/*', './ui/qtsoap/qtsoap.cpp', './ui/qtsoap/qtsoap.h', './ui.argile/native/argile/runtime/qml/swig*', './thirdparty/*', './toolchain/*' ])
 call g:cpp_plugin.indexer.builder.addCustomRegex('c++', '/[ \t]*STINGRAYKIT_DECLARE_SIMPLE_EXCEPTION[ \t]*\(([A-Za-z0-9_]*)[ \t]*,[ \t]*"[^"]*"[ \t]*\)/\1/s/')
 call g:cpp_plugin.indexer.builder.addCustomRegex('c++', '/[ \t]*STINGRAYKIT_DECLARE_PTR[ \t]*\(([A-Za-z0-9_]*)\)/\1Ptr/s/')
