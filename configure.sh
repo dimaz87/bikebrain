@@ -72,5 +72,5 @@ BuildArtifactsToDelete="CMakeCache.txt CMakeFiles Makefile
 
 rm -rf ${BuildArtifactsToDelete}
 
-cmake -DTOOLCHAIN_PATH:FILEPATH="${EdisonSdkInstallPath}" -DTOOLCHAIN_FILE="${RootDirectory}/edison.cmake" "${RootDirectory}" >/dev/null 2>/dev/null
+cmake -DTOOLCHAIN_PATH:FILEPATH="${EdisonSdkInstallPath}" -DTOOLCHAIN_FILE="${RootDirectory}/edison.cmake" "${RootDirectory}" >/dev/null 2>&1
 cmake -DTOOLCHAIN_PATH:FILEPATH="${EdisonSdkInstallPath}" -DTOOLCHAIN_FILE="${RootDirectory}/edison.cmake" "${RootDirectory}"
