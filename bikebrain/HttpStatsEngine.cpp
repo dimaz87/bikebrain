@@ -45,9 +45,11 @@ namespace bikebrain
 	class HttpRequestBase
 	{
 	protected:
-		CurlHolder				_curl;
-		struct curl_slist*		_headers;
-		std::vector<uint8_t>	_responseData;
+		static stingray::NamedLogger	s_logger;
+
+		CurlHolder						_curl;
+		struct curl_slist*				_headers;
+		std::vector<uint8_t>			_responseData;
 
 	public:
 		HttpRequestBase(const std::string& url)
@@ -74,6 +76,8 @@ namespace bikebrain
 		{
 			CURL_CALL(curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, _headers));
 			CURL_CALL(curl_easy_perform(_curl));
+
+			s_logger.Info() << "Response: " << GetResponseCode() << ", Content Type: " << GetResponseContentType() << ", content: " << std::string(GetResponseData().begin(), GetResponseData().end());
 		}
 
 		int GetResponseCode() const
@@ -108,6 +112,8 @@ namespace bikebrain
 		}
 	};
 
+	STINGRAYKIT_DEFINE_NAMED_LOGGER(HttpRequestBase);
+
 
 	class PostRequest : public HttpRequestBase
 	{
@@ -137,6 +143,7 @@ namespace bikebrain
 	private:
 		static stingray::NamedLogger			s_logger;
 
+		int										_tripId;
 		DataEntriesVector						_dataEntries;
 		stingray::Mutex							_mutex;
 
@@ -148,12 +155,9 @@ namespace bikebrain
 			PostRequest r("bikebrains.herokuapp.com/trips.json", "application/json", stingray::ConstByteData((const uint8_t*)jsonStr.data(), jsonStr.size()));
 			r.Perform();
 
-			std::string contentType = r.GetResponseContentType();
-			long responseCode = r.GetResponseCode();
-			std::string content(r.GetResponseData().begin(), r.GetResponseData().end());
+			STINGRAYKIT_CHECK(r.GetResponseCode() / 100 == 2, stingray::StringBuilder() % "HTTP response code: " % r.GetResponseCode());
 
-			s_logger.Info() << "Response: " << responseCode << ", Content Type: " << contentType << ", content: " << content;
-			STINGRAYKIT_CHECK(responseCode / 100 == 2, stingray::StringBuilder() % "HTTP response code: " % responseCode);
+			std::string content(r.GetResponseData().begin(), r.GetResponseData().end());
 
 			s_logger.Info() << "Created";
 		}
