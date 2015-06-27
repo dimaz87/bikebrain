@@ -9,6 +9,8 @@
 #	include <bikebrain/platform/emu/EmuDisplay.h>
 #	include <bikebrain/platform/emu/EmuTextDisplay.h>
 #	include <bikebrain/platform/emu/EmuDistanceSensor.h>
+#elif defined(PLATFORM_EDISON)
+#	include <bikebrain/platform/edison/Button.h>
 #endif
 
 namespace bikebrain
@@ -27,6 +29,9 @@ namespace bikebrain
 		emu::StdinReaderPtr stdinReader = stingray::make_shared<emu::StdinReader>();
 		_leftButton			= stingray::make_shared<emu::EmuButton>(stdinReader, "left");
 		_rightButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "right");
+		_controlButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "control");
+#elif defined(PLATFORM_EDISON)
+		_controlButton		= stingray::make_shared<edison::Button>();
 #endif
 
 		_statsEngine		= stingray::make_shared<emu::EmuStatsEngine>();
@@ -38,6 +43,7 @@ namespace bikebrain
 		_tokens += _timer->SetTimer(stingray::TimeDuration::FromSeconds(3), stingray::bind(&App::PollDataFunc, this));
 		_tokens += _leftButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
 		_tokens += _rightButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
+		_tokens += _controlButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Control"));
 
 		_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
 

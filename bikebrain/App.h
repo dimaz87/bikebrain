@@ -33,6 +33,7 @@ namespace bikebrain
 
 		IButtonPtr										_leftButton;
 		IButtonPtr										_rightButton;
+		IButtonPtr										_controlButton;
 		ILedMatrixPtr									_ledMatrix;
 		ICadenceReporterPtr								_cadenceReporter;
 		IDistanceSensorPtr								_distanceSensor;
