@@ -103,8 +103,8 @@ namespace bikebrain
 		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence);
 
 		if (!_trip)
-			_trip = _statsEngine->StartTrip("shitty\"name");
-		_trip->ReportDataEntry(DataEntry(cadence));
+			_trip = _statsEngine->StartTrip(stingray::StringBuilder() % "bikebrain test trip " % stingray::Time::Now());
+		_trip->ReportDataEntry(DataEntry(GpsData(0, 0, 0, stingray::Time::Now()), cadence));
 	}
 
 

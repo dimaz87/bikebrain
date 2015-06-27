@@ -149,6 +149,7 @@ namespace bikebrain
 
 	public:
 		HttpTrip(const std::string& name)
+			: _tripId(0)
 		{
 			std::string escapedName = stingray::regex_replace(name, stingray::regex("\""), "\\\"");
 			std::string jsonStr = "{ \"trip\": { \"title\": \"" + escapedName + "\" } }";
@@ -159,12 +160,19 @@ namespace bikebrain
 
 			std::string content(r.GetResponseData().begin(), r.GetResponseData().end());
 
-			s_logger.Info() << "Created";
+			stingray::regex re(".*\"id\"\\s*:\\s*(\\d+).*");
+			stingray::smatch m;
+			stingray::regex_search(content, m, re);
+
+			STINGRAYKIT_CHECK(m.size() == 2, "Could not parse server response: '" + content + "'!");
+			_tripId = stingray::FromString<int>(m[1]);
+
+			s_logger.Info() << "Created, tripId: " << _tripId;
 		}
 
 		~HttpTrip()
 		{
-			s_logger.Info() << "Destroying";
+			s_logger.Info() << "Destroying, tripId: " << _tripId;
 			SendDataEntries();
 		}
 
@@ -184,6 +192,40 @@ namespace bikebrain
 			STINGRAYKIT_SCOPE_EXIT(MK_PARAM(DataEntriesVector&, _dataEntries))
 				_dataEntries.clear();
 			STINGRAYKIT_SCOPE_EXIT_END;
+
+			stingray::StringBuilder sb;
+			sb % "{ \"route_points\": [ ";
+			bool first = true;
+			for (DataEntriesVector::const_iterator it = _dataEntries.begin(); it != _dataEntries.end(); ++it)
+			{
+				sb % (first ? "" : ", ") %
+					"{ \"trip_id\": \"" % _tripId % "\", " %
+					"\"gps_longitude\": \"" % it->GetGpsData().GetLongitude() % "\", " %
+					"\"gps_latitude: \"" % it->GetGpsData().GetLatitude() % "\", " %
+					"\"gps_speed\": \"" % it->GetGpsData().GetSpeed() % "\", " %
+					"\"gps_time\": \"" % it->GetGpsData().GetTime() % "\", " %
+					"\", \"cadence\": \"" % it->GetCadence() % "\" }";
+
+				first = false;
+			}
+			sb % " ] }";
+
+			s_logger.Info() << sb;
+
+			std::string jsonStr = sb.ToString();
+			PostRequest r(stingray::StringBuilder() % "bikebrains.herokuapp.com/trips/" % _tripId, "application/json", stingray::ConstByteData((const uint8_t*)jsonStr.data(), jsonStr.size()));
+			r.Perform();
+
+			STINGRAYKIT_CHECK(r.GetResponseCode() / 100 == 2, stingray::StringBuilder() % "HTTP response code: " % r.GetResponseCode());
+/*
+JSON_STRING1='{ "trip_id": "2", "gps_longitude": "30.3212436", "gps_latitude": "59.9682213", "gps_speed": "1.6", "cadence": "30.0", "gps_time": "'`date -u --rfc-3339=ns`'"}'
+JSON_STRING2='{ "trip_id": "2", "gps_longitude": "30.3212436", "gps_latitude": "59.9682213", "gps_speed": "1.6", "cadence": "30.0", "gps_time": "'`date -u --rfc-3339=ns`'"}'
+JSON_STRING='{ "route_points": [ '$JSON_STRING1', '$JSON_STRING2' ] }'
+echo $JSON_STRING
+curl -XPOST -H "Content-Type: application/json" "localhost:3000/route_points/multiple.json" -d "$JSON_STRING"
+
+ */
+
 		}
 	};
 
