@@ -28,7 +28,7 @@ namespace bikebrain
 		IButtonPtr										_rightButton;
 		ILedMatrixPtr									_ledMatrix;
 		ICadenceReporterPtr								_cadenceReporter;
-		IDisplayPtr										_display;
+		ITextDisplayPtr									_textDisplay;
 		IFontPtr										_font;
 
 		stingray::ITaskExecutorPtr						_worker;

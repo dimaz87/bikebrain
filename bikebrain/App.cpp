@@ -4,8 +4,8 @@
 #include <bikebrain/WrappedCFont.h>
 
 #ifdef PLATFORM_EMU
+#	include <bikebrain/platform/emu/EmuDisplay.h>
 #	include <bikebrain/platform/emu/EmuDistanceSensor.h>
-#	include <bikebrain/platform/emu/EmuLedMatrix.h>
 #endif
 
 namespace bikebrain
@@ -17,14 +17,14 @@ namespace bikebrain
 		: _worker(stingray::ITaskExecutor::Create("app"))
 	{
 #ifdef PLATFORM_EMU
-		_ledMatrix			= stingray::make_shared<emu::EmuLedMatrix>();
+		_ledMatrix			= stingray::make_shared<emu::EmuDisplay>("turnIndicator", stingray::Size(32, 16));
 		_distanceSensor		= stingray::make_shared<emu::EmuDistanceSensor>
 		// ...
 #endif
 		_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
 		_font				= stingray::make_shared<WrappedCFont>();
 
-		_display->SetBacklightColor(RGB(255, 255, 255));
+		_textDisplay->SetBacklightColor(RGB(255, 255, 255));
 
 		_tokens += _cadenceReporter->OnCadence().connect(_worker, stingray::bind(&App::CadenceChangedHandler, this, stingray::_1));
 		_tokens += _leftButton->OnPressed().connect(_worker, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
@@ -61,7 +61,7 @@ namespace bikebrain
 	void App::CadenceChangedHandler(double cadence)
 	{
 		s_logger.Info() << "CadenceChangedHandler(" << cadence << ")";
-		_font->DrawString(_display, 0, 0, stingray::StringBuilder() % "cad: " % cadence);
+		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence);
 	}
 
 
