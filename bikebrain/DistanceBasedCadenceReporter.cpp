@@ -4,6 +4,8 @@
 namespace bikebrain
 {
 
+	STINGRAYKIT_DEFINE_NAMED_LOGGER(DistanceBasedCadenceReporter);
+
 	DistanceBasedCadenceReporter::DistanceBasedCadenceReporter(const IDistanceSensorPtr& distanceSensor)
 		: _distanceSensor(distanceSensor), _timer(new stingray::Timer("cadenceReporter"))
 	{
