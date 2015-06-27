@@ -1,0 +1,6 @@
+/.buildSettings
+/CMakeCache.txt
+/CMakeFiles
+/Makefile
+/tags
+/toolchain
