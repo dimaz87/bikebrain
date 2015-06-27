@@ -1,6 +1,7 @@
 #include <bikebrain/App.h>
 
 #include <bikebrain/DistanceBasedCadenceReporter.h>
+#include <bikebrain/HttpStatsEngine.h>
 #include <bikebrain/WrappedCFont.h>
 #include <bikebrain/platform/emu/EmuStatsEngine.h>
 
@@ -34,7 +35,7 @@ namespace bikebrain
 		_controlButton		= stingray::make_shared<edison::Button>();
 #endif
 
-		_statsEngine		= stingray::make_shared<emu::EmuStatsEngine>();
+		_statsEngine		= stingray::make_shared<HttpStatsEngine>();
 		_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
 		_font				= stingray::make_shared<WrappedCFont>();
 

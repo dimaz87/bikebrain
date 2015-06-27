@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(CURL libcurl REQUIRED)
+
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR x86)
 
@@ -74,6 +77,9 @@ include_directories(.)
 include_directories(stingraykit)
 include_directories(Simple-FFT/include)
 
+include_directories(${CURL_INCLUDEDIR})
+link_directories(${CURL_LIBDIR})
+
 set(BIKEBRAIN_SOURCES
 	bikebrain/App.cpp
 	bikebrain/DistanceBasedCadenceReporter.cpp
@@ -101,4 +107,4 @@ endif ()
 set(EXECUTABLE_OUTPUT_PATH ./build)
 
 add_executable(bikebrain ${BIKEBRAIN_SOURCES})
-target_link_libraries(bikebrain stingraykit ${STINGRAYKIT_LIBS})
+target_link_libraries(bikebrain stingraykit ${STINGRAYKIT_LIBS} curl)
