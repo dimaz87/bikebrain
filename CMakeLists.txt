@@ -33,6 +33,7 @@ if (NOT PLATFORM_EMU)
 	include_directories("${EDISON_SYSROOT_PATH}/usr/include/c++")
 	include_directories("${EDISON_SYSROOT_PATH}/usr/include/c++/i586-poky-linux")
 
+	add_definitions(-DPLATFORM_EDISON)
 else()
 	add_definitions(-DPLATFORM_EMU)
 endif ()
@@ -79,13 +80,23 @@ set(BIKEBRAIN_SOURCES
 	bikebrain/HttpStatsEngine.cpp
 	bikebrain/WrappedCFont.cpp
 	bikebrain/main.cpp
-	bikebrain/platform/emu/EmuButton.cpp
-	bikebrain/platform/emu/EmuDisplay.cpp
-	bikebrain/platform/emu/EmuDistanceSensor.cpp
+
 	bikebrain/platform/emu/EmuStatsEngine.cpp
-	bikebrain/platform/emu/EmuTextDisplay.cpp
-	bikebrain/platform/emu/StdinReader.cpp
 )
+
+if (NOT PLATFORM_EMU)
+	list(APPEND BIKEBRAIN_SOURCES
+		bikebrain/platform/edison/Button.cpp
+	)
+else ()
+	list(APPEND BIKEBRAIN_SOURCES
+		bikebrain/platform/emu/EmuButton.cpp
+		bikebrain/platform/emu/EmuDisplay.cpp
+		bikebrain/platform/emu/EmuDistanceSensor.cpp
+		bikebrain/platform/emu/EmuTextDisplay.cpp
+		bikebrain/platform/emu/StdinReader.cpp
+	)
+endif ()
 
 set(EXECUTABLE_OUTPUT_PATH ./build)
 
