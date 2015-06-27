@@ -15,6 +15,10 @@ namespace emu
 
 
 	void EmuLedMatrix::EnableLed(int i, int j, bool enable)
-	{ _data[i + j * _size.Width] = enable; }
+	{
+		STINGRAYKIT_CHECK(i >= 0 && i < _size.Width, stingray::ArgumentException("i"));
+		STINGRAYKIT_CHECK(j >= 0 && j < _size.Height, stingray::ArgumentException("j"));
+		_data[i + j * _size.Width] = enable;
+	}
 
 }}

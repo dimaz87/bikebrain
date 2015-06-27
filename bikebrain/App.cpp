@@ -1,5 +1,6 @@
 #include <bikebrain/App.h>
 
+#include <bikebrain/WrappedCFont.h>
 
 namespace bikebrain
 {
@@ -13,6 +14,7 @@ namespace bikebrain
 		ILedMatrixPtr ledMatrix = stingray::make_shared<emu::EmuLedMatrix>();
 		// ...
 #endif
+		_font = stingray::make_shared<WrappedCFont>();
 
 		_display->SetBacklightColor(RGB(255, 255, 255));
 
@@ -51,6 +53,7 @@ namespace bikebrain
 	void App::CadenceChangedHandler(double cadence)
 	{
 		s_logger.Info() << "CadenceChangedHandler(" << cadence << ")";
+		_font->DrawString(_display, 0, 0, StringBuilder() % "cad: " % cadence);
 	}
 
 

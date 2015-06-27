@@ -6,6 +6,8 @@
 #include <bikebrain/IDisplay.h>
 #include <bikebrain/ILedMatrix.h>
 
+#include <stingraykit/toolkit.h>
+
 namespace bikebrain
 {
 
@@ -27,6 +29,7 @@ namespace bikebrain
 		ILedMatrixPtr									_ledMatrix;
 		ICadenceReporterPtr								_cadenceReporter;
 		IDisplayPtr										_display;
+		IFontPtr										_font;
 
 		stingray::ITaskExecutorPtr						_worker;
 
