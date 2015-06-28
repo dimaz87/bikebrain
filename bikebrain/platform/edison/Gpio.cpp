@@ -15,6 +15,25 @@ namespace bikebrain {
 namespace edison
 {
 
+	struct OutputMode
+	{
+		STINGRAYKIT_ENUM_VALUES(Strong, PullUp, PullDown, HighZ);
+		STINGRAYKIT_DECLARE_ENUM_CLASS(OutputMode);
+	};
+
+
+	struct OutputModeMapper : public BaseValueMapper<OutputModeMapper, OutputMode::Enum, mraa::Mode>
+	{
+		typedef TypeList<
+				Src::Value<OutputMode::Strong>  , Dst::Value<mraa::MODE_STRONG>,
+				Src::Value<OutputMode::PullUp>  , Dst::Value<mraa::MODE_PULLUP>,
+				Src::Value<OutputMode::PullDown>, Dst::Value<mraa::MODE_PULLDOWN>,
+				Src::Value<OutputMode::HighZ>   , Dst::Value<mraa::MODE_HIZ> >::type	MappingsList;
+
+		typedef TypeList<Src::Fail, Dst::Fail>	DefaultMapping;
+	};
+
+
 	struct GpioPortMapper : public BaseValueMapper<GpioPortMapper, int, int>
 	{
 		typedef TypeList<
@@ -72,6 +91,8 @@ namespace edison
 		void SetDirection(Gpio::Direction direction)
 		{
 			MRAA_CALL(_gpio.dir(DirectionMapper::Map(direction)));
+			if (direction == Gpio::Direction::Out)
+				MRAA_CALL(_gpio.mode(OutputModeMapper::Map(OutputMode::Strong)));
 		}
 
 		void SetEdge(Gpio::Edge edge)
