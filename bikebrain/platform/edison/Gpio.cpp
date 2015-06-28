@@ -118,10 +118,17 @@ namespace edison
 	private:
 		static void IsrHandler(void* arg)
 		{
-			Logger::Info() << "ISR HANDLER";
+			try
+			{
+				Logger::Info() << "ISR HANDLER";
 
-			Impl* impl = static_cast<Impl*>(arg);
-			impl->_onEvent(impl->Read());
+				Impl* impl = static_cast<Impl*>(arg);
+				impl->_onEvent(impl->Read());
+			}
+			catch (const std::exception& ex)
+			{
+				perror(ex.what());
+			}
 		}
 	};
 
