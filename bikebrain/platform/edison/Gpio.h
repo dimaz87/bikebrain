@@ -29,11 +29,13 @@ namespace edison
 		STINGRAYKIT_DECLARE_PTR(Impl);
 
 	private:
+		int			_port;
 		ImplPtr		_impl;
 
 	public:
 		Gpio(int portNumber, Direction dir);
 		Gpio(int portNUmber, Edge edge);
+		~Gpio();
 
 		bool Read() const;
 		void Write(bool value);
