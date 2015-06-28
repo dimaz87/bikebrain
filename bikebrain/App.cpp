@@ -21,7 +21,7 @@ namespace bikebrain
 	STINGRAYKIT_DEFINE_NAMED_LOGGER(App);
 
 	App::App()
-		: _timer(new stingray::Timer("app"))
+		: _timer(new stingray::Timer("app")), _dataReportWorker(stingray::ITaskExecutor::Create("dataReporter"))
 	{
 #ifdef PLATFORM_EMU
 		_gpsModule			= stingray::make_shared<emu::EmuGpsModule>();
@@ -49,6 +49,7 @@ namespace bikebrain
 		_tokens += _controlButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Control"));
 
 		_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
+		_tokens += _activeTripState.OnChanged().connect(_timer, stingray::bind(&App::ActiveTripStateChangedHandler, this, stingray::_1));
 
 		s_logger.Info() << "Created";
 	}
@@ -75,6 +76,8 @@ namespace bikebrain
 			_turnIndicatorState = _turnIndicatorState.Get() == TurnIndicatorState::Left ? TurnIndicatorState::None : TurnIndicatorState::Left;
 		else if (button == "Right")
 			_turnIndicatorState = _turnIndicatorState.Get() == TurnIndicatorState::Right ? TurnIndicatorState::None : TurnIndicatorState::Right;
+		else if (button == "Control")
+			_activeTripState = !_activeTripState.Get();
 	}
 
 
@@ -96,6 +99,12 @@ namespace bikebrain
 	}
 
 
+	void App::ActiveTripStateChangedHandler(bool state)
+	{
+		_dataReportWorker->AddTask(stingray::bind(state ? &App::DoStartTrip : &App::DoStopTrip, this));
+	}
+
+
 	void App::PollDataFunc()
 	{
 		s_logger.Info() << "PollDataFunc()";
@@ -103,13 +112,24 @@ namespace bikebrain
 		double cadence = _cadenceReporter->GetCadence();
 		GpsData gpsData = _gpsModule->GetData();
 
-		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence);
+		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence % "\ntrip: " % _activeTripState.Get());
 
-		if (!_trip)
-			_trip = _statsEngine->StartTrip(stingray::StringBuilder() % "bikebrain test trip " % stingray::Time::Now());
-		_trip->ReportDataEntry(DataEntry(gpsData, cadence));
+		_dataReportWorker->AddTask(stingray::bind(&App::DoReportData, this, DataEntry(gpsData, cadence)));
 	}
 
 
+	void App::DoStartTrip()
+	{ _trip = _statsEngine->StartTrip(stingray::StringBuilder() % "Trip " % stingray::Time::Now()); }
+
+
+	void App::DoStopTrip()
+	{ _trip.reset(); }
+
+
+	void App::DoReportData(const DataEntry& dataEntry)
+	{
+		if (_trip)
+			_trip->ReportDataEntry(dataEntry);
+	}
 
 }

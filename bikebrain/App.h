@@ -31,6 +31,7 @@ namespace bikebrain
 		static stingray::NamedLogger					s_logger;
 
 		stingray::ObservableValue<TurnIndicatorState>	_turnIndicatorState;
+		stingray::ObservableValue<bool>					_activeTripState;
 
 		IGpsModulePtr									_gpsModule;
 		IButtonPtr										_leftButton;
@@ -44,6 +45,7 @@ namespace bikebrain
 		IStatsEnginePtr									_statsEngine;
 		ITripPtr										_trip;
 
+		stingray::ITaskExecutorPtr						_dataReportWorker;
 		stingray::TimerPtr								_timer;
 
 		stingray::TokenPool								_tokens;
@@ -57,8 +59,12 @@ namespace bikebrain
 	private:
 		void ButtonPressedHandler(const std::string& button);
 		void TurnIndicatorStateChangedHandler(TurnIndicatorState state);
+		void ActiveTripStateChangedHandler(bool state);
 
 		void PollDataFunc();
+		void DoStartTrip();
+		void DoStopTrip();
+		void DoReportData(const DataEntry& dataEntry);
 	};
 
 }
