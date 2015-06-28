@@ -13,6 +13,6 @@ namespace emu
 
 
 	void EmuTextDisplay::SetText(const std::string& str) const
-	{ s_logger.Info() << "SetText(" << str << ") const"; }
+	{ s_logger.Info() << "Text:\n" << str; }
 
 }}
