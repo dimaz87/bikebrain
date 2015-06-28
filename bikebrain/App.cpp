@@ -15,8 +15,12 @@
 #	include <bikebrain/platform/edison/Button.h>
 #endif
 
+#define USE_ANIMATED_TURN_INDICATOR !defined(PLATFORM_EMU)
+
 namespace bikebrain
 {
+
+	static const stingray::TimeDuration UpdateTurnIndicatorInterval = stingray::TimeDuration::FromMilliseconds(60);
 
 	STINGRAYKIT_DEFINE_NAMED_LOGGER(App);
 
@@ -51,6 +55,10 @@ namespace bikebrain
 		_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
 		_tokens += _activeTripState.OnChanged().connect(_timer, stingray::bind(&App::ActiveTripStateChangedHandler, this, stingray::_1));
 
+#if USE_ANIMATED_TURN_INDICATOR
+		_tokens += _timer->SetTimer(UpdateTurnIndicatorInterval, stingray::bind(&App::UpdateTurnIndicator, this));
+#endif
+
 		s_logger.Info() << "Created";
 	}
 
@@ -84,6 +92,7 @@ namespace bikebrain
 	void App::TurnIndicatorStateChangedHandler(TurnIndicatorState state)
 	{
 		s_logger.Info() << "TurnIndicatorStateChangedHandler(" << state << ")";
+#if !USE_ANIMATED_TURN_INDICATOR
 		switch (state)
 		{
 		case TurnIndicatorState::None:
@@ -96,12 +105,35 @@ namespace bikebrain
 			_font->DrawString(_ledMatrix, 0, 0, "RGHT");
 			break;
 		}
+#endif
 	}
 
 
 	void App::ActiveTripStateChangedHandler(bool state)
 	{
 		_dataReportWorker->AddTask(stingray::bind(state ? &App::DoStartTrip : &App::DoStopTrip, this));
+	}
+
+
+	void App::UpdateTurnIndicator()
+	{
+		int direction = 0;
+		std::string s;
+		switch (_turnIndicatorState.Get())
+		{
+		case TurnIndicatorState::None:
+			s = "     ";
+			break;
+		case TurnIndicatorState::Left:
+			s = "< < < <";
+			direction = -1;
+			break;
+		case TurnIndicatorState::Right:
+			s = "> > > > >";
+			direction = 1;
+			break;
+		}
+		_font->DrawString(_ledMatrix, (direction * _elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 16 - 16, 4, s);
 	}
 
 

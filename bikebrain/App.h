@@ -30,6 +30,8 @@ namespace bikebrain
 	private:
 		static stingray::NamedLogger					s_logger;
 
+		stingray::ElapsedTime							_elapsedTime;
+
 		stingray::ObservableValue<TurnIndicatorState>	_turnIndicatorState;
 		stingray::ObservableValue<bool>					_activeTripState;
 
@@ -61,7 +63,10 @@ namespace bikebrain
 		void TurnIndicatorStateChangedHandler(TurnIndicatorState state);
 		void ActiveTripStateChangedHandler(bool state);
 
+		void UpdateTurnIndicator();
+
 		void PollDataFunc();
+
 		void DoStartTrip();
 		void DoStopTrip();
 		void DoReportData(const DataEntry& dataEntry);
