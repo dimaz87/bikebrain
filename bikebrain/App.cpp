@@ -115,25 +115,51 @@ namespace bikebrain
 	}
 
 
+	int r[] = {
+		0, 0, 0, 0, 1, 1, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 0, 0, 0, 0,
+		0, 0, 1, 1, 0, 0, 0, 0,
+		0, 0, 1, 0, 0, 0, 0, 0,
+		0, 1, 1, 0, 0, 0, 0, 0,
+		0, 1, 0, 0, 0, 0, 0, 0,
+		1, 1, 0, 0, 0, 0, 0, 0,
+		1, 1, 0, 0, 0, 0, 0, 0,
+		0, 1, 0, 0, 0, 0, 0, 0,
+		0, 1, 1, 0, 0, 0, 0, 0,
+		0, 0, 1, 0, 0, 0, 0, 0,
+		0, 0, 1, 1, 0, 0, 0, 0,
+		0, 0, 0, 1, 0, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 0, 1, 1, 0, 0
+		};
+
 	void App::UpdateTurnIndicator()
 	{
-		int direction = 0;
-		std::string s;
-		switch (_turnIndicatorState.Get())
-		{
-		case TurnIndicatorState::None:
-			s = "     ";
-			break;
-		case TurnIndicatorState::Left:
-			s = "< < < <";
-			direction = -1;
-			break;
-		case TurnIndicatorState::Right:
-			s = "> > > > >";
-			direction = 1;
-			break;
-		}
-		_font->DrawString(_ledMatrix, (direction * _elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 16 - 16, 4, s);
+		//int direction = 0;
+		//std::string s;
+		//switch (_turnIndicatorState.Get())
+		//{
+		//case TurnIndicatorState::None:
+			//s = "     ";
+			//break;
+		//case TurnIndicatorState::Left:
+			//s = "< < < <";
+			//direction = -1;
+			//break;
+		//case TurnIndicatorState::Right:
+			//s = "> > > > >";
+			//direction = 1;
+			//break;
+		//}
+		int offset = (_elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 8;
+		for (int x = 0; x < 32; ++x)
+			for (int y = 0; y < 16; ++y)
+			{
+				int idx = y * 8 + (x + offset) % 8;
+				_ledMatrix->EnableLed(x, y, r[idx]);
+			}
+		//_font->DrawString(_ledMatrix, (direction * _elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 16 - 16, 4, s);
 	}
 
 
