@@ -42,21 +42,27 @@ namespace bikebrain
 #endif
 
 		_statsEngine		= stingray::make_shared<HttpStatsEngine>();
-		_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
+		if (_distanceSensor)
+			_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
 		_font				= stingray::make_shared<WrappedCFont>();
 
 		_textDisplay->SetBacklightColor(RGB(255, 255, 255));
 
 		_tokens += _timer->SetTimer(stingray::TimeDuration::FromSeconds(3), stingray::bind(&App::PollDataFunc, this));
-		_tokens += _leftButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
-		_tokens += _rightButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
-		_tokens += _controlButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Control"));
+		if (_leftButton)
+			_tokens += _leftButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
+		if (_rightButton)
+			_tokens += _rightButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
+		if (_controlButton)
+			_tokens += _controlButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Control"));
 
-		_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
+		if (_ledMatrix)
+			_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
 		_tokens += _activeTripState.OnChanged().connect(_timer, stingray::bind(&App::ActiveTripStateChangedHandler, this, stingray::_1));
 
 #if USE_ANIMATED_TURN_INDICATOR
-		_tokens += _timer->SetTimer(UpdateTurnIndicatorInterval, stingray::bind(&App::UpdateTurnIndicator, this));
+		if (_ledMatrix)
+			_tokens += _timer->SetTimer(UpdateTurnIndicatorInterval, stingray::bind(&App::UpdateTurnIndicator, this));
 #endif
 
 		s_logger.Info() << "Created";
@@ -167,7 +173,7 @@ namespace bikebrain
 	{
 		s_logger.Info() << "PollDataFunc()";
 
-		double cadence = _cadenceReporter->GetCadence();
+		double cadence = _cadenceReporter ? _cadenceReporter->GetCadence() : 0;
 		GpsData gpsData = _gpsModule->GetData();
 
 		_textDisplay->SetText(stingray::StringBuilder() % "cad: " % cadence % "\ntrip: " % _activeTripState.Get());
