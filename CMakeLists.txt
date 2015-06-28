@@ -95,6 +95,7 @@ if (NOT PLATFORM_EMU)
 	list(APPEND BIKEBRAIN_SOURCES
 		bikebrain/platform/edison/Button.cpp
 		bikebrain/platform/edison/Gpio.cpp
+		bikebrain/platform/edison/UltrasonicDistanceSensor.cpp
 	)
 else ()
 	list(APPEND BIKEBRAIN_SOURCES
