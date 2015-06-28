@@ -56,6 +56,7 @@ namespace bikebrain
 		if (_controlButton)
 			_tokens += _controlButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Control"));
 
+		_turnIndicatorState = TurnIndicatorState::Left;
 		if (_ledMatrix)
 			_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
 		_tokens += _activeTripState.OnChanged().connect(_timer, stingray::bind(&App::ActiveTripStateChangedHandler, this, stingray::_1));
@@ -142,29 +143,37 @@ namespace bikebrain
 
 	void App::UpdateTurnIndicator()
 	{
-		//int direction = 0;
-		//std::string s;
-		//switch (_turnIndicatorState.Get())
-		//{
-		//case TurnIndicatorState::None:
-			//s = "     ";
-			//break;
-		//case TurnIndicatorState::Left:
-			//s = "< < < <";
-			//direction = -1;
-			//break;
-		//case TurnIndicatorState::Right:
-			//s = "> > > > >";
-			//direction = 1;
-			//break;
-		//}
-		int offset = (_elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 8;
-		for (int x = 0; x < 32; ++x)
-			for (int y = 0; y < 16; ++y)
+		int direction = 0;
+		switch (_turnIndicatorState.Get())
+		{
+			case TurnIndicatorState::None:
+				for (int x = 0; x < 32; ++x)
+					for (int y = 0; y < 16; ++y)
+						_ledMatrix->EnableLed(x, y, false);
+				break;
+			case TurnIndicatorState::Left:
 			{
-				int idx = y * 8 + (x + offset) % 8;
-				_ledMatrix->EnableLed(x, y, r[idx]);
+				int offset = (_elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 8;
+				for (int x = 0; x < 32; ++x)
+					for (int y = 0; y < 16; ++y)
+					{
+						int idx = y * 8 + (x + offset) % 8;
+						_ledMatrix->EnableLed((32 - x), y, r[idx]);
+					}
+				break;
 			}
+			case TurnIndicatorState::Right:
+			{
+				int offset = (_elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 8;
+				for (int x = 0; x < 32; ++x)
+					for (int y = 0; y < 16; ++y)
+					{
+						int idx = y * 8 + (x + offset) % 8;
+						_ledMatrix->EnableLed(x, y, r[idx]);
+					}
+				break;
+			}
+		}
 		//_font->DrawString(_ledMatrix, (direction * _elapsedTime.ElapsedMilliseconds() / UpdateTurnIndicatorInterval.GetMilliseconds()) % 16 - 16, 4, s);
 	}
 
