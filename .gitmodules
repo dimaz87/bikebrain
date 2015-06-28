@@ -4,3 +4,6 @@
 [submodule "Simple-FFT"]
 	path = Simple-FFT
 	url = git@github.com:d1vanov/Simple-FFT.git
+[submodule "Ultrathin_LED_Matrix"]
+	path = Ultrathin_LED_Matrix
+	url = git@github.com:Seeed-Studio/Ultrathin_LED_Matrix.git
