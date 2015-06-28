@@ -4,6 +4,7 @@
 
 #include <stingraykit/exception.h>
 #include <stingraykit/shared_ptr.h>
+#include <stingraykit/log/Logger.h>
 
 #include <map>
 
@@ -19,7 +20,10 @@ static GpioPtr GetGpio(int pin)
 {
 	GpioCache::const_iterator it = g_gpioCache.find(pin);
 	if (it == g_gpioCache.end())
+	{
+		stingray::Logger::Info() << "Created GPIO pin " << pin;
 		it = g_gpioCache.insert(std::make_pair(pin, stingray::make_shared<Gpio>(pin))).first;
+	}
 	return it->second;
 }
 
