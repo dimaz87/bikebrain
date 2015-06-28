@@ -3,8 +3,8 @@ au FileType cpp,cpp.doxygen set complete-=i
 set wildignore=*.o,*.html,*.md5,*.exe,*.dll,*.bak,*.png,*.jpg,*.orig,*.swp,*.swo,*.pyc,*/.git/*,*/.hg/*,*/.bzr/*,*/doxygen/*,*/CMakeFiles/*,ui/*,etc/*,*/cxxtest/*,*/v8/*,*/toolchain/*,*/thirdparty/*
 let g:exclude_from_search=['stingray_wrap.cpp']
 
-set path+=stingraykit,Simple-FFT/include,toolchain/edison-sdk-linux64-ww18-15/sysroots/core2-32-poky-linux/usr/include
-let g:include_directories = [ 'stingraykit', 'Simple-FFT/include', 'toolchain/edison-sdk-linux64-ww18-15/sysroots/core2-32-poky-linux/usr/include' ]
+set path+=stingraykit,Simple-FFT/include,ArduinoEmu,toolchain/edison-sdk-linux64-ww18-15/sysroots/core2-32-poky-linux/usr/include
+let g:include_directories = [ 'stingraykit', 'ArduinoEmu', 'Simple-FFT/include', 'toolchain/edison-sdk-linux64-ww18-15/sysroots/core2-32-poky-linux/usr/include' ]
 
 
 let g:cpp_plugin.whitespacesCountAroundImports = 1

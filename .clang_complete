@@ -1,4 +1,5 @@
 -I.
 -Istingraykit
 -ISimple-FFT/include
+-IArduinoAmu
 -Itoolchain/edison-sdk-linux64-ww18-15/sysroots/core2-32-poky-linux/usr/include

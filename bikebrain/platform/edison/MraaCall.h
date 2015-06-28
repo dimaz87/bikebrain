@@ -12,14 +12,14 @@
 	do \
 	{ \
 		mraa_result_t result = (__VA_ARGS__); \
-		STINGRAYKIT_CHECK(result == MRAA_SUCCESS, #__VA_ARGS__ " failed: " + MraaResultToString(result)); \
+		STINGRAYKIT_CHECK(result == MRAA_SUCCESS, #__VA_ARGS__ " failed: " + bikebrain::edison::MraaResultToString(result)); \
 	} while (0)
 
 namespace bikebrain {
 namespace edison
 {
 
-	std::string MraaResultToString(mraa_result_t result)
+	inline std::string MraaResultToString(mraa_result_t result)
 	{
 		switch (result)
 		{

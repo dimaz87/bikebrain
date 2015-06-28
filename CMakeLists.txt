@@ -75,6 +75,7 @@ include_directories(${STINGRAYKIT_INCLUDE_DIRECTORIES})
 include_directories(.)
 include_directories(stingraykit)
 include_directories(Simple-FFT/include)
+include_directories(ArduinoEmu)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(CURL libcurl REQUIRED)
@@ -95,7 +96,10 @@ if (NOT PLATFORM_EMU)
 	list(APPEND BIKEBRAIN_SOURCES
 		bikebrain/platform/edison/Button.cpp
 		bikebrain/platform/edison/Gpio.cpp
+		bikebrain/platform/edison/LedMatrix.cpp
 		bikebrain/platform/edison/UltrasonicDistanceSensor.cpp
+		Ultrathin_LED_Matrix/LEDMatrix.cpp
+		ArduinoEmu/Arduino.cpp
 	)
 else ()
 	list(APPEND BIKEBRAIN_SOURCES
