@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(CURL libcurl REQUIRED)
-
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR x86)
 
@@ -20,7 +17,7 @@ if (NOT PLATFORM_EMU)
 	set(CMAKE_CXX_COMPILER "${EDISON_CXX_COMPILER}")
 
 	set(EDISON_SYSROOT_PATH "${TOOLCHAIN_PATH}/${RELATIVE_SYSROOT_PATH}")
-	set(CMAKE_FIND_ROOT_PATH "${EDISON_SYSROOT_PATH}")
+	set(CMAKE_FIND_ROOT_PATH "${EDISON_SYSROOT_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty")
 	set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
 	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -77,6 +74,8 @@ include_directories(.)
 include_directories(stingraykit)
 include_directories(Simple-FFT/include)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(CURL libcurl REQUIRED)
 include_directories(${CURL_INCLUDEDIR})
 link_directories(${CURL_LIBDIR})
 
