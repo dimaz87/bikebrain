@@ -34,27 +34,6 @@ namespace edison
 	};
 
 
-	struct GpioPortMapper : public BaseValueMapper<GpioPortMapper, int, int>
-	{
-		typedef TypeList<
-				Src::Value< 0>, Dst::Value<0>,
-				Src::Value< 1>, Dst::Value<1>,
-				Src::Value< 2>, Dst::Value<2>,
-				Src::Value< 3>, Dst::Value<3>,
-				Src::Value< 4>, Dst::Value<4>,
-				Src::Value< 5>, Dst::Value<5>,
-				Src::Value< 6>, Dst::Value<6>,
-				Src::Value< 7>, Dst::Value<7>,
-				Src::Value< 8>, Dst::Value<8>,
-				Src::Value< 9>, Dst::Value<9>,
-				Src::Value<10>, Dst::Value<10>,
-				Src::Value<11>, Dst::Value<11>,
-				Src::Value<12>, Dst::Value<12> >::type	MappingsList;
-
-		typedef TypeList<Src::Fail, Dst::Fail>::type	DefaultMapping;
-	};
-
-
 	struct DirectionMapper : public BaseValueMapper<DirectionMapper, Gpio::Direction::Enum, mraa::Dir>
 	{
 		typedef TypeList<
@@ -84,7 +63,7 @@ namespace edison
 		signal<void (bool)>		_onEvent;
 
 	public:
-		Impl(int portNumber) : _pin(GpioPortMapper::Map(portNumber)), _gpio(_pin, true, false)
+		Impl(int portNumber) : _pin(portNumber), _gpio(_pin, true, false)
 		{
 
 		}
@@ -151,6 +130,7 @@ namespace edison
 	Gpio::Gpio(int portNumber, Edge edge) : _port(portNumber), _impl(new Impl(portNumber))
 	{
 		Logger::Info() << "Try to open GPIO on port " << portNumber << " with edge control " << edge;
+		_impl->SetDirection(Gpio::Direction::In);
 		_impl->SetEdge(edge);
 	}
 
