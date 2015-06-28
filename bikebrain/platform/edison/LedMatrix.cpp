@@ -3,6 +3,8 @@
 #include <stingraykit/function/bind.h>
 #include <stingraykit/log/Logger.h>
 
+using namespace stingray;
+
 namespace bikebrain {
 namespace edison
 {
@@ -23,7 +25,7 @@ namespace edison
 	void LedMatrix::EnableLed(int i, int j, bool enable)
 	{
 		stingray::MutexLock l(_sync);
-		_matrix.drawPoint(i, j, enable);
+		_changes.push_back(Change(i, j, enable));
 	}
 
 
@@ -33,9 +35,14 @@ namespace edison
 		{
 			{
 				stingray::MutexLock l(_sync);
-				_matrix.scan();
+				while (!_changes.empty())
+				{
+					Change c = _changes.back();
+					_matrix.drawPoint(c.Get<0>(), c.Get<1>(), c.Get<2>());
+					_changes.pop_back();
+				}
 			}
-			stingray::Thread::Sleep(1);
+			_matrix.scan();
 		}
 	}
 
