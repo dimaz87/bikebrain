@@ -9,7 +9,7 @@ namespace emu
 
 	EmuDisplay::EmuDisplay(const std::string& name, stingray::Size size)
 		:	_name(name), _size(size), _data(size.Width * size.Height),
-			_deferrer(new stingray::ExecutionDeferrerWithTimer(name + "Display", 100))
+			_deferrer(new stingray::ExecutionDeferrerWithTimer(name + "Display", 30))
 	{ }
 
 
