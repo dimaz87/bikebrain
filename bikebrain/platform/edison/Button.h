@@ -2,8 +2,9 @@
 #define BIKEBRAIN_PLATFORM_EDISON_BUTTON_H
 
 #include <bikebrain/IButton.h>
+#include <bikebrain/platform/edison/Gpio.h>
 
-#include <stingraykit/shared_ptr.h>
+#include <stingraykit/signal/signals.h>
 
 namespace bikebrain {
 namespace edison
@@ -11,17 +12,14 @@ namespace edison
 
 	class Button : public virtual IButton
 	{
-		struct ButtonImpl;
-		STINGRAYKIT_DECLARE_PTR(ButtonImpl);
-
 	private:
-		ButtonImplPtr	_impl;
+		Gpio						_gpio;
+		stingray::signal<void ()>	_onPressed;
 
 	public:
-		Button();
-		~Button();
+		Button(int portNumber);
 
-		virtual stingray::signal_connector<void()> OnPressed() const;
+		virtual stingray::signal_connector<void ()> OnPressed() const { return _onPressed.connector(); }
 
 	private:
 	};

@@ -33,6 +33,8 @@ if (NOT PLATFORM_EMU)
 	include_directories("${EDISON_SYSROOT_PATH}/usr/include/c++")
 	include_directories("${EDISON_SYSROOT_PATH}/usr/include/c++/i586-poky-linux")
 
+	list(APPEND PLATFORM_LIBS mraa)
+
 	add_definitions(-DPLATFORM_EDISON)
 else()
 	add_definitions(-DPLATFORM_EMU)
@@ -92,6 +94,7 @@ set(BIKEBRAIN_SOURCES
 if (NOT PLATFORM_EMU)
 	list(APPEND BIKEBRAIN_SOURCES
 		bikebrain/platform/edison/Button.cpp
+		bikebrain/platform/edison/Gpio.cpp
 	)
 else ()
 	list(APPEND BIKEBRAIN_SOURCES
@@ -107,4 +110,4 @@ endif ()
 set(EXECUTABLE_OUTPUT_PATH ./build)
 
 add_executable(bikebrain ${BIKEBRAIN_SOURCES})
-target_link_libraries(bikebrain stingraykit ${STINGRAYKIT_LIBS} curl)
+target_link_libraries(bikebrain stingraykit ${STINGRAYKIT_LIBS} ${PLATFORM_LIBS} curl)

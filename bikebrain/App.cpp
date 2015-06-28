@@ -38,7 +38,7 @@ namespace bikebrain
 		_rightButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "right");
 		_controlButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "control");
 #elif defined(PLATFORM_EDISON)
-		_controlButton		= stingray::make_shared<edison::Button>();
+		_controlButton		= stingray::make_shared<edison::Button>(0);
 #endif
 
 		_statsEngine		= stingray::make_shared<HttpStatsEngine>();
