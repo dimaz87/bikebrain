@@ -13,6 +13,8 @@
 #	include <bikebrain/platform/emu/EmuTextDisplay.h>
 #elif defined(PLATFORM_EDISON)
 #	include <bikebrain/platform/edison/Button.h>
+#	include <bikebrain/platform/edison/LedMatrix.h>
+#	include <bikebrain/platform/edison/UltrasonicDistanceSensor.h>
 #endif
 
 #define USE_ANIMATED_TURN_INDICATOR !defined(PLATFORM_EMU)
@@ -38,28 +40,36 @@ namespace bikebrain
 		_rightButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "right");
 		_controlButton		= stingray::make_shared<emu::EmuButton>(stdinReader, "control");
 #elif defined(PLATFORM_EDISON)
-		_controlButton		= stingray::make_shared<edison::Button>(0);
+		_leftButton			= stingray::make_shared<edison::Button>(9);
+		_rightButton		= stingray::make_shared<edison::Button>(10);
+//		_distanceSensor		= stingray::make_shared<edison::UltrasonicDistanceSensor>(3);
+		_ledMatrix			= stingray::make_shared<edison::LedMatrix>();
 #endif
 
 		_statsEngine		= stingray::make_shared<HttpStatsEngine>();
-		if (_distanceSensor)
-			_cadenceReporter	= stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
 		_font				= stingray::make_shared<WrappedCFont>();
 
-		_textDisplay->SetBacklightColor(RGB(255, 255, 255));
+		if (_distanceSensor)
+			_cadenceReporter = stingray::make_shared<DistanceBasedCadenceReporter>(_distanceSensor);
+
+		if (_textDisplay)
+			_textDisplay->SetBacklightColor(RGB(255, 255, 255));
 
 		_tokens += _timer->SetTimer(stingray::TimeDuration::FromSeconds(3), stingray::bind(&App::PollDataFunc, this));
+
 		if (_leftButton)
-			_tokens += _leftButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Left"));
+			_tokens += _leftButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Left", stingray::_1));
 		if (_rightButton)
-			_tokens += _rightButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Right"));
+			_tokens += _rightButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Right", stingray::_1));
 		if (_controlButton)
-			_tokens += _controlButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Control"));
+			_tokens += _controlButton->OnPressed().connect(_timer, stingray::bind(&App::ButtonPressedHandler, this, "Control", stingray::_1));
 
 		_turnIndicatorState = TurnIndicatorState::Left;
 		if (_ledMatrix)
 			_tokens += _turnIndicatorState.OnChanged().connect(_timer, stingray::bind(&App::TurnIndicatorStateChangedHandler, this, stingray::_1));
-		_tokens += _activeTripState.OnChanged().connect(_timer, stingray::bind(&App::ActiveTripStateChangedHandler, this, stingray::_1));
+
+		if (_gpsModule)
+			_tokens += _activeTripState.OnChanged().connect(_timer, stingray::bind(&App::ActiveTripStateChangedHandler, this, stingray::_1));
 
 #if USE_ANIMATED_TURN_INDICATOR
 		if (_ledMatrix)
@@ -84,9 +94,9 @@ namespace bikebrain
 	}
 
 
-	void App::ButtonPressedHandler(const std::string& button)
+	void App::ButtonPressedHandler(const std::string& button, stingray::u32 ms)
 	{
-		s_logger.Info() << "ButtonPressedHandler(" << button << ")";
+		s_logger.Info() << "ButtonPressedHandler(" << button << ", " << ms << ")";
 		if (button == "Left")
 			_turnIndicatorState = _turnIndicatorState.Get() == TurnIndicatorState::Left ? TurnIndicatorState::None : TurnIndicatorState::Left;
 		else if (button == "Right")

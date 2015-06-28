@@ -59,7 +59,7 @@ namespace bikebrain
 		void Run();
 
 	private:
-		void ButtonPressedHandler(const std::string& button);
+		void ButtonPressedHandler(const std::string& button, stingray::u32 ms);
 		void TurnIndicatorStateChangedHandler(TurnIndicatorState state);
 		void ActiveTripStateChangedHandler(bool state);
 
