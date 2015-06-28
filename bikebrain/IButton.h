@@ -10,7 +10,7 @@ namespace bikebrain
 	{
 		virtual ~IButton() { }
 
-		virtual stingray::signal_connector<void()> OnPressed() const = 0;
+		virtual stingray::signal_connector<void(stingray::u32 ms)> OnPressed() const = 0;
 	};
 	STINGRAYKIT_DECLARE_PTR(IButton);
 

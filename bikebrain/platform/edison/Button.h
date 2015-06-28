@@ -5,7 +5,9 @@
 #include <bikebrain/platform/edison/Gpio.h>
 
 #include <stingraykit/exception.h>
+#include <stingraykit/Token.h>
 #include <stingraykit/signal/signals.h>
+#include <stingraykit/time/ElapsedTime.h>
 
 namespace bikebrain {
 namespace edison
@@ -14,20 +16,19 @@ namespace edison
 	class Button : public virtual IButton
 	{
 	private:
-		Gpio						_gpio;
-		stingray::signal<void ()>	_onPressed;
+		Gpio									_gpio;
+		bool									_pressed;
+		stingray::ElapsedTime					_elapsed;
+		stingray::signal<void (stingray::u32)>	_onPressed;
+		stingray::TokenHolder					_connection;
 
 	public:
-		Button(int portNumber) : _gpio(portNumber, Gpio::Edge::Rising) { } // TODO: change to Edge::Both to implement hold detection
+		Button(int portNumber);
 
-		virtual stingray::signal_connector<void ()> OnPressed() const { return _onPressed.connector(); }
+		virtual stingray::signal_connector<void (stingray::u32)> OnPressed() const { return _onPressed.connector(); }
 
 	private:
-		void GpioEventHandler(bool gpioLevel)
-		{
-			STINGRAYKIT_CHECK(gpioLevel, stingray::InvalidOperationException());
-			_onPressed();
-		}
+		void GpioEventHandler(bool gpioLevel);
 	};
 
 }}
